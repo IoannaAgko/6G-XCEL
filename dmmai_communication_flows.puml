@@ -39,14 +39,20 @@ Node "DMMAI Framework" #Beige{
         }
     }
 
+    component "User Applications" as UserApplications #LightSeaGreen{
+            component "User App 1" as UserApp1 
+            component "User App 2" as UserApp2 
+        }
+
+    component "AI Service Management \n& Orchestration" as AiServiceManagementOrchestration #LightSeaGreen      
+
     database "Abs Data \nRepository" as AbsDataRepository #LightGreen
     database "Network Data \nRepository" as NetworkDataRepository #LightGreen
     database "User Data \nRepository" as UserDataRepository #LightGreen
-
     database "5G AI Models \nRepository" as 5GModelRepository #LightPink
     database "Acceleration Models \nRepository" as AccelerationModelRepository #LightPink
 
-
+    
 }
 
 
