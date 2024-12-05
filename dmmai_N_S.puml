@@ -1,0 +1,62 @@
+@startuml dmmai_communication_flows
+title DMMAI Communication Flows
+
+hide footbox
+!pragma teoz true
+skinparam DefaultFontSize 20
+skinparam ComponentSpacing 10
+skinparam ComponentStyle uml2
+skinparam HorizontalAlignment center
+
+Node "DMMAI Framework" #Beige{
+    component "DMMAI Control Engine" as DMMAIControlEngine #LightCoral{
+        component  "AI Control Engine" #LightBlue{
+            component "AI Control\nApp 1" as AIControlApp1
+            component "AI Control\nApp 2" as AIControlApp2
+            component "AI Control\nApp 3" as AIControlApp3
+            component "AI Control\nApp 4" as AIControlApp4
+        
+            AIControlApp1 -[#LightBlue]> AIControlApp2
+            AIControlApp2 -[#LightBlue]-> AIControlApp3
+            AIControlApp4 <-[#LightBlue] AIControlApp3
+        }
+
+        component "Inter-AI Message Broker" #LightBlue{
+            component "Topic 1" as Topic1
+            component "Topic 2" as Topic2
+            component "Topic 3" as Topic3
+            component "Topic n" as Topicn
+
+            Topic1 -[#LightBlue]-> Topic2
+            Topic2 -[#LightBlue]-> Topic3
+            Topic3 -[#LightBlue]-> Topicn
+
+        }
+
+        component "Register" #LightBlue{
+            component "AI control App\nRegister" as AIControlAppRegister
+            component "PM and Control\nRegister" as PMControlRegister
+        }
+    }
+
+    component "User Applications" as UserApplications #LightSeaGreen{
+            component "User App 1" as UserApp1 
+            component "User App 2" as UserApp2 
+        }
+
+    component "AI Service Management \n& Orchestration" as AiServiceManagementOrchestration #LightSeaGreen      
+
+    database "Abs Data \nRepository" as AbsDataRepository #LightGreen
+    database "Network Data \nRepository" as NetworkDataRepository #LightGreen
+    database "User Data \nRepository" as UserDataRepository #LightGreen
+    database "5G AI Models \nRepository" as 5GModelRepository #LightPink
+    database "Acceleration Models \nRepository" as AccelerationModelRepository #LightPink
+
+    
+}
+
+
+@enduml
+
+' database db
+' queue false
