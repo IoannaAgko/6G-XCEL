@@ -1,0 +1,10 @@
+Flow example:
+
+- The User Applications send a request  (optimization or prediction task) to the AI Service Management & Orchestration 
+- The Orchestrator within the AI Service Management receives the request and forwards it to DMMAI Control Engine
+- The AI control Engine is responsible to decide which AIC app will execute the task.
+- The assigned AI Control App 1 executes the task.
+- Retrieves an AI model from the Model Repository.
+- Checks the Policy Supervisor to fetch applicable policies and constraints.
+- Then is sent to Testing/Validation Component for validation and the validation result is returned to the AI Control App.
+- The validated request is send to the Local Node Message Broker, ready for further execution in the network.

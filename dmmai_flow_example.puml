@@ -1,0 +1,71 @@
+@startuml DMMAI
+title DMMAI Framework Diagram with Communication Flow
+hide footbox
+!pragma teoz true
+skinparam DefaultFontSize 20
+skinparam ComponentSpacing 10
+skinparam ComponentStyle uml2
+
+Node "DMMAI Framework" #Beige {
+
+    component "User Applications" as UserApplications #LightSeaGreen {
+        component "User App 1" as UserApp1
+        component "User App 2" as UserApp2
+    }
+    component "Third-Party AI x/rApps" as ThirdPartyApps #LightSeaGreen
+    
+    component "AI Service Management\n& Orchestration" as AiServiceManagementOrchestration #LightSeaGreen
+    component "Curation/DSP" as CurationDSP #LightSeaGreen
+    database "User Data Repository" as UserDataRepository #LightGreen
+    database "5G AI Models Repository" as ModelsRepository #LightPink
+    database "Acceleration Models Repository" as AcceleratorsRepository #LightPink
+
+    component "AI Controller Toolbox" as AIControllerToolbox #LightCoral {
+        component "Model" as ModelComponent #LightBlue
+        component "Accel" as AccelComponent #LightBlue
+        database "Abs Data Repository" as AbsDataRepository #LightGreen
+        database "Network Data Repository" as NetworkDataRepository #LightGreen
+        component "N-S Communication" as NSComm #LightBlue
+        component "E-W Communication" as EWComm #LightBlue
+        component "Curation/DSP" as CurationDSPToolbox #LightBlue
+        component "Testing/Validation" as TestingValidation #LightBlue
+        component "Policy Supervisor" as PolicySupervisor #LightBlue
+    }
+
+    component "DMMAI Control Engine" as DMMAIControlEngine #LightCoral {
+        component "Protocol Translation Module" as ProtocolModule #LightGreen
+        component "Local/Node Message Broker" as LocalNodeMessageBroker #White {
+           component "Topic 1" as Topic1
+           component "Topic 2" as Topic2
+        }
+        component "AI Control Engine" as AIControlEngine #LightBlue {
+            component "AI Control\nApp 1" as AIControlApp1
+            component "AI Control\nApp 2" as AIControlApp2
+            component "AI Control\nApp 3" as AIControlApp3
+            component "AI Control\nApp 4" as AIControlApp4
+        }
+        
+        component "Inter-AI Message Broker" as MessageBroker #LightBlue {
+            component "Topic 1" as BrokerTopic1
+            component "Topic 2" as BrokerTopic2
+            component "Topic 3" as BrokerTopic3
+            component "Topic n" as BrokerTopicN
+        }
+
+        component "Register" as RegisterComponent #LightGreen {
+            component "AI Control App\nRegister" as AIControlAppRegister
+            component "PM and Control\nRegister" as PMControlRegister
+        }
+    }
+
+    UserApp1 -down-> AiServiceManagementOrchestration : Request Task
+    AiServiceManagementOrchestration -down-> AIControlApp1 : Deploy Task
+    AIControlApp1 -down-> ModelComponent : Fetch AI Model
+    AIControlApp1 -down-> PolicySupervisor : Request Policy
+    PolicySupervisor -up-> AIControlApp1 : Return Policy
+    AIControlApp1 -down-> TestingValidation : Validate Decision
+    TestingValidation -up-> AIControlApp1 : Return Validation Result
+    AIControlApp1 -down-> LocalNodeMessageBroker : Publish Validated Command
+}
+
+@enduml
