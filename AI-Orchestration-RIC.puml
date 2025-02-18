@@ -1,0 +1,105 @@
+@startuml AI-Orchestration-RIC
+
+!pragma teoz true
+
+actor Admin as Admin
+actor User as User
+
+box Orchestrator
+    participant "AI-Orchestration-RIC" as Orchestrator
+    participant "TMF638\nClient" as TMF638client
+end box
+
+box "Near-RT RIC" #LightGreen
+
+    participant "TMF638\nServer" as RIC638
+    collections "Near-RT Functions" as NearRT
+
+    participant xApp #LightBlue
+    box "AI Controller" #Orange
+        collections "Controller\nFunctions" as Controller
+        queue MQ
+    end box
+
+    participant "E2 Term" as E2Term
+
+
+end box
+
+box "UPatras RAN" #LightBlue
+
+    participant "O-RAN Shim" as Shim
+    participant "Radio Manager" as RadioMgr
+    collections "gNBs"
+
+end box
+
+== Preparation ==
+
+TMF638client -> RIC638: ""**POST** /sub""\nCreate subscription
+RIC638 --> TMF638client: ""200 OK""
+
+== Onboarding xApp through Orchestrator ==
+
+User -> Orchestrator: Deploy DMMAI xApp
+Orchestrator -> Orchestrator: //<color red>Determine ServiceSpec</color>//
+Orchestrator -> TMF638client: Deploy service
+
+TMF638client -> RIC638: ""**POST** /services""
+RIC638 -> NearRT: Deploy DMMAI xApp
+RIC638 --> TMF638client: ""202 Accepted""
+TMF638client --> Orchestrator: Request accepted
+Orchestrator --> User: xApp deployment in progress
+group Installation
+    NearRT --> Controller: Install DMMAI framework
+    NearRT --> xApp: Installs xApp
+
+
+    RIC638 -> TMF638client: ""POST /callback""\nDMMAI ready
+    TMF638client --> RIC638: ""200 OK""
+    TMF638client --> Orchestrator: Application deployed
+    Orchestrator --> User: xApp deployed
+end group
+
+== RAN registering to RIC ==
+
+loop For all Shim instances 
+Shim <-> E2Term: ""<<E2>> SETUP""
+E2Term <-> NearRT: E2 Node Registered
+end
+
+
+== Activate xApp ==
+
+TMF638client -> RIC638: ""**PATCH** /services/{serviceId}""\nAction: Modify
+RIC638 <-> NearRT: Activate DMMAI xApp
+RIC638 --> TMF638client: ""200 OK""
+TMF638client --> Orchestrator: xApp activated
+group DMMAI framework activated
+
+    gNBs -> RadioMgr: Performance metrics\nreceived
+    RadioMgr -> Shim: Performance metrics\nreceived
+    Shim -> MQ: PM send
+    MQ -> Controller: PM received
+
+    group DMMAI makes Energy Savings (ES) decision
+        Controller -> xApp: ES request\n(e.g. reduce TX power)
+        xApp <-> Shim: ES request
+        Shim <-> RadioMgr: ES request
+        RadioMgr <-> gNBs: ES request
+    end
+
+end
+
+
+== Undeploy xApp ==
+
+TMF638client -> RIC638: ""**DELETE** /services/{serviceId}""
+RIC638 -> NearRT: Undeploy DMMAI xApp
+RIC638 --> TMF638client: ""200 OK""
+TMF638client --> Orchestrator: xApp undeployed
+opt DMMAI framework reset
+    NearRT -> Controller: Reset DMMAI framework
+end
+
+@enduml
